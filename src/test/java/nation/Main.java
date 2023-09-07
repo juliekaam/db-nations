@@ -1,9 +1,17 @@
 package nation;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("Quali paesi?");
+        String search = scan.nextLine();
+        System.out.println("Cerco i paesi che contengono " + search);
+
         // variabili in cui salvo i parametri di connessione al db
         String url = "jdbc:mysql://localhost:3306/db-nations";
         String user = "root";
@@ -37,18 +45,13 @@ Connection connection = null;
             // uso la connessione per preparare uno statement sql
             // NO RISCHIO SQL INJECTION !!!!!
             // String sql = "select * from departments where name like '%" + search + "%' order by name;";
-            String sql = "select countries.name as nation ,countries.country_id as nation_id ,regions.name as region,continents.name as continent from countries join regions  on  countries.region_id = regions.region_id join continents on regions.continent_id =continents.continent_id order by countries.name; " ;
+            String sql = "select countries.name as nation ,countries.country_id as nation_id ,regions.name as region,continents.name as continent from countries join regions  on  countries.region_id = regions.region_id join continents on regions.continent_id =continents.continent_id where countries.name like ? order by countries.name; " ;
 
             try(PreparedStatement ps = conn.prepareStatement(sql)) {
-                /* prima di eseguire il prepared statement faccio il binding dei parametri
-                String nation = null;
-                ps.setString(1, nation);// il primo parametro (1) vale quello che c'è nella variabile search
-                int id = 0;
-                ps.setInt(2, id);
-                String region = null;
-                ps.setString(3, region);
-                String continent = null;
-                ps.setString(4, continent);*/
+                // prima di eseguire il prepared statement faccio il binding dei parametri
+
+                ps.setString(1,  "%"+search+"%");// il primo parametro (1) vale quello che c'è nella variabile search
+
 
                 // eseguo la query e la inserisco in un oggetto ResultSet
                 try (ResultSet rs = ps.executeQuery()) {
